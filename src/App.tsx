@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<AuthenticationForm />} />
+        <Route path="/" element={<AuthenticationForm />} />
         <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
     </>

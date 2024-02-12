@@ -1,6 +1,7 @@
 import { Box, CheckIcon, CloseIcon, NavLink, ThemeIcon } from '@mantine/core';
 import React, { FC, useState } from 'react';
 import { IconArrowLeft, IconHome, IconLogout, IconMug, IconNut, IconPlus, IconReport } from '@tabler/icons-react';
+import ManageMember from './ManageMemeber';
 
 
 interface DashboardProps {
@@ -38,7 +39,7 @@ const Dashboard: FC<DashboardProps> = ({ }) => {
                     active === 0 ? (
                         "DASHBOARD"
                     ) : active === 1 ? (
-                        "MANAGE MEMBER"
+                        <ManageMember />
                     ) : active === 2 ? (
                         "EXPORT REPORT"
                     ) : active === 3 ? (

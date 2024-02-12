@@ -62,9 +62,9 @@ const AuthenticationForm: FC<AuthenticationFormProps> = (props: PaperProps) => {
     }
 }
     return (
-        <>
-            <Paper radius="md" p="xl" withBorder {...props}>
-                <Text size="lg" fw={500}>
+        <div className='d-flex align-items-center justify-content-center' style={{minHeight: '100dvh'}}>
+            <Paper radius="md" p="xl" {...props} className='col-sm-12 col-md-6 col-lg-6 col-xl-6'>
+                <Text size="lg" fw={500} className='text-center'>
                     Welcome to GMS, Please {type}
                 </Text>
                 <Divider label="Enter credentials" labelPosition="center" my="lg" />
@@ -101,7 +101,7 @@ const AuthenticationForm: FC<AuthenticationFormProps> = (props: PaperProps) => {
                         />
                     </Stack>
 
-                    <Group justify="space-between" mt="xl" className='d-flex flex-column'>
+                    <Group justify="space-between" mt="xl">
                         <Anchor component="button" type="button" c="dimmed" onClick={() => toggle()} size="xs">
                             {type === 'register'
                                 ? 'Already have an account? Login'
@@ -113,7 +113,7 @@ const AuthenticationForm: FC<AuthenticationFormProps> = (props: PaperProps) => {
                     </Group>
                 </form>
             </Paper>
-        </>
+        </div>
     );
 };
 
