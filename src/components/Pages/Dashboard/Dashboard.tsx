@@ -10,12 +10,10 @@ import {
 } from '@tabler/icons-react';
 import classes from './Dashboard.module.css';
 import AllMembers from '../AllMembers/AllMembers';
-import AssignNotification from '../AssignNotification/AssignNotification';
 import { useNavigate } from 'react-router-dom';
 
 const data = [
     { label: 'Manage Members', icon: IconEditCircle, component: <AllMembers /> },
-    { label: 'Notifications', icon: IconBellRinging, component: <AssignNotification /> },
     { label: 'Report', icon: IconReceipt2, component: null },
     { label: 'Store', icon: IconShoppingBag, component: null },
     { label: 'Diet Plans', icon: IconHealthRecognition, component: null },

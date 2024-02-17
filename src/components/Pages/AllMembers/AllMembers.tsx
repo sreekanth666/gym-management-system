@@ -1,17 +1,21 @@
 import { FC, useEffect, useState } from 'react';
 import { Avatar, Table, Group, Text, ActionIcon, Menu, rem, Button, Flex } from '@mantine/core';
 import {
-    IconPencil,
-    IconMessages,
-    IconNote,
-    IconReportAnalytics,
     IconTrash,
     IconDots,
     IconReload,
+    IconReceiptRupee,
+    IconCoinRupee,
 } from '@tabler/icons-react';
 import AddMemberModal from '../../Shared/UserModal/AddMemberModal';
 import { getAllDocsService } from '../../../services/app/common/getAllDoc.service';
 import { DB } from '../../../constants/db.constant';
+import { deleteDocService } from '../../../services/app/common/removeDoc.service';
+import { notifications } from '@mantine/notifications';
+import { SUCCESS_MESSAGE } from '../../../constants/success.constants';
+import { ERROR_MESSAGE } from '../../../constants/error.constant';
+import { format } from 'date-fns';
+import { partialUpdateDocService } from '../../../services/app/common/updateDoc.service';
 
 interface AllMembersProps {
 
@@ -19,16 +23,79 @@ interface AllMembersProps {
 
 const AllMembers: FC<AllMembersProps> = ({ }) => {
     const [userList, setUsersList] = useState<any>([])
+
+    // FETCH ALL USERS FROM DB
     const fetchAllUsers = async () => {
         try {
-            const users = await getAllDocsService(DB.USER)
-            setUsersList(users)
-            console.log(users);
-
+            const users: any = await getAllDocsService(DB.USER)
+            const filteredUsers = users.filter((item: { mode: string; }) => item.mode !== "admin")
+            setUsersList(filteredUsers)
         } catch (error) {
-            console.log(error);
-
+            console.error(error);
         }
+    }
+
+    // DELETE A SINGLE USER
+    const deleteUser = async (userId: string) => {
+        const result = await deleteDocService(userId, DB.USER)
+        if (result.success) {
+            notifications.show({
+                message: SUCCESS_MESSAGE.DELETE,
+                title: 'Success',
+                color: 'green'
+            })
+            fetchAllUsers()
+        } else {
+            notifications.show({
+                message: ERROR_MESSAGE.DEFAULT,
+                title: 'Error',
+                color: 'red'
+            })
+        }
+    }
+
+    // UPDATE BILL STATUS OF SINGLE USER
+    const updateBillPaymentStatus = async (docId: string, status: boolean) => {
+        const currentDate = new Date();
+        const formattedDate = format(currentDate, 'dd MMMM yyyy')
+        console.log(formattedDate);
+        if (status) {
+            const updatedStatus = {
+                lastBillPayment: formattedDate
+            }
+            await partialUpdateDocService(docId, updatedStatus, DB.USER)
+            fetchAllUsers()
+        } else {
+            const updatedStatus = {
+                lastBillPayment: "Due"
+            }
+            await partialUpdateDocService(docId, updatedStatus, DB.USER)
+            fetchAllUsers()
+        }
+    }
+
+    // SET NOTIFICATION ON BILL DUE TO THE USER
+    const setBillNotification = async (docId: string, status: boolean) => {
+        const currentDate = new Date();
+        const formattedDate = format(currentDate, 'dd MMMM yyyy')
+        if (status) {
+            const billReminder = {
+                billReminder: {
+                    reminder: "You have not paid the fee yet.",
+                    date: formattedDate
+                }
+            }
+            await partialUpdateDocService(docId, billReminder, DB.USER)
+        } else {
+            const billReminder = {
+                billReminder: {
+                    reminder: null,
+                    date: formattedDate
+                }
+            }
+            await partialUpdateDocService(docId, billReminder, DB.USER)
+        }
+        fetchAllUsers()
     }
 
     useEffect(() => {
@@ -60,11 +127,14 @@ const AllMembers: FC<AllMembersProps> = ({ }) => {
                 <Text fz="xs" c="dimmed">
                     Monthly Fees
                 </Text>
+                <Text fz="xs" c="dimmed">
+                    {item.lastBillPayment ? `Last Payment: ${item.lastBillPayment}` : "Last Payment: Due"}
+                </Text>
             </Table.Td>
             <Table.Td>
                 <Group gap={0} justify="flex-center">
                     <ActionIcon variant="subtle" color="gray">
-                        <IconPencil style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+                        <AddMemberModal isEditing={true} editingData={item} />
                     </ActionIcon>
                     <Menu
                         transitionProps={{ transition: 'pop' }}
@@ -80,28 +150,30 @@ const AllMembers: FC<AllMembersProps> = ({ }) => {
                         <Menu.Dropdown>
                             <Menu.Item
                                 leftSection={
-                                    <IconMessages style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+                                    <IconCoinRupee style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
                                 }
+                                onClick={() => updateBillPaymentStatus(item.id, (item.lastBillPayment === 'Due' || "" ? true : false))}
                             >
-                                Send message
+                                {item.lastBillPayment === 'Due' || "" ? "Bill Paid" : "Bill Not Paid"}
+                                <Text fz="xs" c="dimmed">
+                                    Update payment status
+                                </Text>
                             </Menu.Item>
                             <Menu.Item
-                                leftSection={<IconNote style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
+                                leftSection={<IconReceiptRupee style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
+                                onClick={() => setBillNotification(item.id, (item.billReminder ? (item.billReminder.reminder === null ? true : false) : true))}
                             >
-                                Add note
-                            </Menu.Item>
-                            <Menu.Item
-                                leftSection={
-                                    <IconReportAnalytics style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-                                }
-                            >
-                                Analytics
+                                {(item.billReminder ? (item.billReminder.reminder === null ? "Send Bill Reminder" : "Remove Bill Reminder") : "Send Bill Reminder")}
+                                <Text fz="xs" c="dimmed">
+                                    {(item.billReminder ? (item.billReminder.reminder === null ? "No notification is send" : "Notification already delivered") : "No notification is send")}
+                                </Text>
                             </Menu.Item>
                             <Menu.Item
                                 leftSection={<IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
                                 color="red"
+                                onClick={() => deleteUser(item.id)}
                             >
-                                Terminate contract
+                                Delete Membership
                             </Menu.Item>
                         </Menu.Dropdown>
                     </Menu>
@@ -116,7 +188,7 @@ const AllMembers: FC<AllMembersProps> = ({ }) => {
             </Text>
 
             <Flex justify={"space-between"}>
-                <AddMemberModal />
+                <AddMemberModal isEditing={false} />
                 <Button p='5' mb="md" radius='xl' onClick={fetchAllUsers}><IconReload /></Button>
             </Flex>
 
