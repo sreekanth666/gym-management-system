@@ -15,8 +15,8 @@ import {
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo.png";
-import { loginService } from "../../../services/app/login.service";
-import { userRegistrationService } from "../../../services/app/user-registration.service";
+import { loginService } from "../../../services/app/domain/auth/login.service";
+import { userRegistrationService } from "../../../services/app/domain/auth/user-registration.service";
 import { notifications } from "@mantine/notifications";
 import { ERROR_MESSAGE } from "../../../constants/error.constant";
 

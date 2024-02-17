@@ -1,8 +1,7 @@
-import { FC } from 'react';
+import { FC, ReactElement } from 'react';
 import { useState } from 'react';
 import {
     IconBellRinging,
-    IconDatabaseImport,
     IconReceipt2,
     IconLogout,
     IconEditCircle,
@@ -15,12 +14,11 @@ import AssignNotification from '../AssignNotification/AssignNotification';
 import { useNavigate } from 'react-router-dom';
 
 const data = [
-    { link: '', label: 'Add Members', icon: IconDatabaseImport, component: "" },
-    { link: '', label: 'Manage Members', icon: IconEditCircle, component: <AllMembers /> },
-    { link: '', label: 'Notifications', icon: IconBellRinging, component: <AssignNotification /> },
-    { link: '', label: 'Report', icon: IconReceipt2, component: "" },
-    { link: '', label: 'Store', icon: IconShoppingBag, component: "" },
-    { link: '', label: 'Diet Plans', icon: IconHealthRecognition, component: "" },
+    { label: 'Manage Members', icon: IconEditCircle, component: <AllMembers /> },
+    { label: 'Notifications', icon: IconBellRinging, component: <AssignNotification /> },
+    { label: 'Report', icon: IconReceipt2, component: null },
+    { label: 'Store', icon: IconShoppingBag, component: null },
+    { label: 'Diet Plans', icon: IconHealthRecognition, component: null },
 ];
 
 interface DashboardProps {
@@ -28,15 +26,14 @@ interface DashboardProps {
 }
 
 const Dashboard: FC<DashboardProps> = ({ }) => {
-    const [active, setActive] = useState('Add Members');
-    const [component, setComponent] = useState()
+    const [active, setActive] = useState('Manage Members');
+    const [component, setComponent] = useState<React.ReactNode>(data[0].component)
     const navigate = useNavigate()
 
     const links = data.map((item) => (
         <a
             className={classes.link}
             data-active={item.label === active || undefined}
-            href={item.link}
             key={item.label}
             onClick={(event) => {
                 event.preventDefault();

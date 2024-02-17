@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { Avatar, Table, Group, Text, ActionIcon, Menu, rem } from '@mantine/core';
+import { FC, useEffect, useState } from 'react';
+import { Avatar, Table, Group, Text, ActionIcon, Menu, rem, Button, Flex } from '@mantine/core';
 import {
     IconPencil,
     IconMessages,
@@ -7,81 +7,58 @@ import {
     IconReportAnalytics,
     IconTrash,
     IconDots,
+    IconReload,
 } from '@tabler/icons-react';
-
-const data = [
-    {
-        avatar:
-            'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-        name: 'Robert Wolfkisser',
-        job: 'Engineer',
-        email: 'rob_wolf@gmail.com',
-        rate: 22,
-    },
-    {
-        avatar:
-            'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-        name: 'Jill Jailbreaker',
-        job: 'Engineer',
-        email: 'jj@breaker.com',
-        rate: 45,
-    },
-    {
-        avatar:
-            'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-        name: 'Henry Silkeater',
-        job: 'Designer',
-        email: 'henry@silkeater.io',
-        rate: 76,
-    },
-    {
-        avatar:
-            'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-        name: 'Bill Horsefighter',
-        job: 'Designer',
-        email: 'bhorsefighter@gmail.com',
-        rate: 15,
-    },
-    {
-        avatar:
-            'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-        name: 'Jeremy Footviewer',
-        job: 'Manager',
-        email: 'jeremy@foot.dev',
-        rate: 98,
-    },
-];
+import AddMemberModal from '../../Shared/UserModal/AddMemberModal';
+import { getAllDocsService } from '../../../services/app/common/getAllDoc.service';
+import { DB } from '../../../constants/db.constant';
 
 interface AllMembersProps {
 
 }
 
 const AllMembers: FC<AllMembersProps> = ({ }) => {
-    const rows = data.map((item) => (
-        <Table.Tr key={item.name}>
+    const [userList, setUsersList] = useState<any>([])
+    const fetchAllUsers = async () => {
+        try {
+            const users = await getAllDocsService(DB.USER)
+            setUsersList(users)
+            console.log(users);
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    useEffect(() => {
+        fetchAllUsers()
+    }, [])
+    const rows = userList.map((item: any) => (
+        <Table.Tr key={item.username}>
             <Table.Td>
                 <Group gap="sm">
-                    <Avatar size={40} src={item.avatar} radius={40} />
+                    <Avatar size={40} radius={40} />
                     <div>
                         <Text fz="sm" fw={500}>
-                            {item.name}
+                            {item.username}
                         </Text>
                         <Text c="dimmed" fz="xs">
-                            {item.job}
+                            {item.email}
                         </Text>
                     </div>
                 </Group>
             </Table.Td>
             <Table.Td>
-                <Text fz="sm">{item.email}</Text>
+                <Text fz="sm">{item.healthCondition}</Text>
                 <Text fz="xs" c="dimmed">
-                    Email
+                    Health Condition
                 </Text>
             </Table.Td>
             <Table.Td>
-                <Text fz="sm">${item.rate.toFixed(1)} / hr</Text>
+                <Text fz="sm">Rs {item.fees.toFixed(1)} / month</Text>
                 <Text fz="xs" c="dimmed">
-                    Rate
+                    Monthly Fees
                 </Text>
             </Table.Td>
             <Table.Td>
@@ -134,15 +111,21 @@ const AllMembers: FC<AllMembersProps> = ({ }) => {
     ));
     return (
         <>
-        <Text fw={500} size="xl" c="dimmed" mb="md" mt="md">
+            <Text fw={500} size="xl" c="dimmed" mb="md" mt="md">
                 Manage Members
             </Text>
+
+            <Flex justify={"space-between"}>
+                <AddMemberModal />
+                <Button p='5' mb="md" radius='xl' onClick={fetchAllUsers}><IconReload /></Button>
+            </Flex>
+
             <Table.ScrollContainer minWidth={800}>
                 <Table verticalSpacing="sm">
                     <Table.Thead>
                         <Table.Tr>
                             <Table.Th>Member</Table.Th>
-                            <Table.Th>Assigned Diet Plan</Table.Th>
+                            <Table.Th>Condition</Table.Th>
                             <Table.Th>Fee Status</Table.Th>
                             <Table.Th>Actions</Table.Th>
                         </Table.Tr>
