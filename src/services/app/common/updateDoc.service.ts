@@ -3,7 +3,6 @@ import { database } from "../../firebase/setup";
 import { SUCCESS_MESSAGE } from "../../../constants/success.constants";
 
 export const partialUpdateDocService = async (docId: string, newData: object, dbRef: string) => {
-    console.log(docId);
     
     try {
         const docRef = doc(database, dbRef, docId);

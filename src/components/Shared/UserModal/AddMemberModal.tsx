@@ -26,7 +26,8 @@ const AddMemberModal: FC<AddMemberModalProps> = ({ isEditing, editingData }) => 
             weight: "",
             height: "",
             healthCondition: "",
-            password: ""
+            password: "",
+            role: "member"
         },
         validate: {
             username: (value) => (value.length === 0 ? "Username is required" : null),

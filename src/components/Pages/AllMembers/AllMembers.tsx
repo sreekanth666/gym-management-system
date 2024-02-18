@@ -28,7 +28,7 @@ const AllMembers: FC<AllMembersProps> = ({ }) => {
     const fetchAllUsers = async () => {
         try {
             const users: any = await getAllDocsService(DB.USER)
-            const filteredUsers = users.filter((item: { mode: string; }) => item.mode !== "admin")
+            const filteredUsers = users.filter((item: { role: string; }) => item.role !== "admin" && item.role !== "user")
             setUsersList(filteredUsers)
         } catch (error) {
             console.error(error);
@@ -152,9 +152,8 @@ const AllMembers: FC<AllMembersProps> = ({ }) => {
                                 leftSection={
                                     <IconCoinRupee style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
                                 }
-                                onClick={() => updateBillPaymentStatus(item.id, (item.lastBillPayment === 'Due' || "" ? true : false))}
-                            >
-                                {item.lastBillPayment === 'Due' || "" ? "Bill Paid" : "Bill Not Paid"}
+                                onClick={() => updateBillPaymentStatus(item.id, (item.lastBillPayment === 'Due' || !item.lastBillPayment) ? true : false)}                            >
+                                {(item.lastBillPayment === 'Due' || !item.lastBillPayment) ? "Bill Paid" : "Bill Not Paid"}
                                 <Text fz="xs" c="dimmed">
                                     Update payment status
                                 </Text>

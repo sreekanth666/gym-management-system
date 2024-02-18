@@ -29,11 +29,13 @@ const AuthenticationForm: FC<AuthenticationFormProps> = (props: PaperProps) => {
         email: string;
         name: string;
         password: string;
+        role: string;
     }>({
         initialValues: {
             email: "",
             name: "",
             password: "",
+            role: "user",
         },
         validate: {
             email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
@@ -58,9 +60,13 @@ const AuthenticationForm: FC<AuthenticationFormProps> = (props: PaperProps) => {
         } else {
             try {
                 const { email, password } = form.values;
-                const result = await loginService(email, password);
+                const result: any = await loginService(email, password);
+                console.log(result);
+                
                 if (result.data) {
-                    localStorage.setItem("_UEML", result.data.email);
+                    localStorage.setItem("_rlid", result.data.role);
+                    localStorage.setItem("_ueml", result.data.email);
+                    localStorage.setItem("_uid", result.data.userId)
                 }
                 if (result.success) {
                     navigate("/dashboard");
