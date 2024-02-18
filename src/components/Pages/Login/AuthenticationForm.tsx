@@ -19,6 +19,7 @@ import { loginService } from "../../../services/app/domain/auth/login.service";
 import { userRegistrationService } from "../../../services/app/domain/auth/user-registration.service";
 import { notifications } from "@mantine/notifications";
 import { ERROR_MESSAGE } from "../../../constants/error.constant";
+import { SUCCESS_MESSAGE } from "../../../constants/success.constants";
 
 interface AuthenticationFormProps { }
 
@@ -48,7 +49,24 @@ const AuthenticationForm: FC<AuthenticationFormProps> = (props: PaperProps) => {
     const handleUserAction = async () => {
         if (type === "register") {
             try {
-                await userRegistrationService(form.values);
+                const result: any = await userRegistrationService(form.values);
+                console.log(result);
+                if (result.success) {
+                    notifications.show({
+                        title: "Success",
+                        message: SUCCESS_MESSAGE.REGISTER,
+                        autoClose: 1500,
+                        color: "green",
+                    });
+                    toggle()
+                } else {
+                    notifications.show({
+                        title: "Error",
+                        message: ERROR_MESSAGE.REG_FAIL,
+                        autoClose: 1500,
+                        color: "red",
+                    });
+                }
             } catch (error) {
                 notifications.show({
                     title: "Error",
@@ -61,8 +79,6 @@ const AuthenticationForm: FC<AuthenticationFormProps> = (props: PaperProps) => {
             try {
                 const { email, password } = form.values;
                 const result: any = await loginService(email, password);
-                console.log(result);
-                
                 if (result.data) {
                     localStorage.setItem("_rlid", result.data.role);
                     localStorage.setItem("_ueml", result.data.email);

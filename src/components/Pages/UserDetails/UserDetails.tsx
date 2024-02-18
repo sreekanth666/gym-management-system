@@ -17,16 +17,6 @@ interface UserDetailsProps {
 const UserDetails: FC<UserDetailsProps> = ({ }) => {
     const [userData, setUserData] = useState<any>()
     const id = localStorage.getItem("_uid")
-    const items = stats.map((stat) => (
-        <div key={stat.label}>
-            <Text ta="center" fz="lg" fw={500}>
-                {stat.value}
-            </Text>
-            <Text ta="center" fz="sm" c="dimmed" lh={1}>
-                {stat.label}
-            </Text>
-        </div>
-    ));
 
     const fetchUserData = async () => {
         if (id) {
